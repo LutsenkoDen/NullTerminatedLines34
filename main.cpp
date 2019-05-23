@@ -14,8 +14,9 @@ bool isLowRusLetter(char symbol);
 
 void Shrink(char szStr[]);		//Удаляет лишние пробелы между словами в предложении.
 void RemoveSpaces(char szStr[]);//Удаляет все пробелы между словами в предложении.
-bool isPalindrome(char szStr[]);	//Проверяет, является ли данная строка палиндромом.
+bool isPalindrome(char szStr[]);//Проверяет, является ли данная строка палиндромом.
 bool isNumber(char szStr[]);	//Проверяет, является строка числом. Строка является числом, если содержит только цифры.
+int StringToInt(char szStr[]);
 bool isHexNumber(char szStr[]);	//Проверяет, является строка шестнадцатеричным числом. Строка является Hex-числом, если содержит только цифры и буквы ABCDEF либо abcdef.
 
 
@@ -43,6 +44,7 @@ void main()
 	cout << "Удалены все пробелы: " << szStr << endl;
 	cout << "Строка является числом: " << isNumber(szStr) << endl;
 	cout << "Строка является Hex-числом: " << isHexNumber(szStr) << endl;
+	cout << StringToInt(szStr) << endl;
 }
 
 void InputLine(char szStr[], const int n)
@@ -149,18 +151,38 @@ void RemoveSpaces(char szStr[])
 
 bool isNumber(char szStr[])
 {
-	for (int i = 0; i < szStr[i]; i++)
+	if ((szStr[0] < '0' || szStr[0] > '9') && szStr[0] != '-' && szStr[0] != '+')return false;
+	for (int i = 1; szStr[i]; i++)
 	{
-		if (szStr[i] >= '0' && szStr[i] <= '9')return true;
-		else return false;
+		if (szStr[i] < '0' || szStr[i] > '9')return false;
+		return true;
 	}
 }
+
+int StringToInt(char szStr[])
+{
+	if (!isNumber(szStr))return 0;
+	int decimal = 0;
+	bool signed_number = false;
+	if (szStr[0] == '+' || szStr[0] == '-')signed_number = true;
+	for (int i = signed_number ? 1 : 0; szStr[i]; i++)
+	{
+		decimal *= 10;
+		decimal += szStr[i] - 48;
+	}
+	if (szStr[0] == '-')decimal = -decimal;
+	return decimal;
+}
+
+
+
+
 
 bool isHexNumber(char szStr[])
 {
 	for (int i = 0; i < szStr[i]; i++)
 	{
-		if (szStr[i] >= '0' && szStr[i] <= '9' && szStr[i] >= 'A' && szStr[i] <= 'F' || szStr[i] >= 'a' && szStr[i] <= 'f')return true;
+		if (szStr[i] < '0' || szStr[i] > '9' && szStr[i] >= 'A' && szStr[i] <= 'F' || szStr[i] >= 'a' && szStr[i] <= 'f')return true;
 		else return false;
 	}
 }
