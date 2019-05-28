@@ -16,9 +16,10 @@ void Shrink(char szStr[]);		//Удаляет лишние пробелы между словами в предложении
 void RemoveSpaces(char szStr[]);//Удаляет все пробелы между словами в предложении.
 bool isPalindrome(char szStr[]);//Проверяет, является ли данная строка палиндромом.
 bool isNumber(char szStr[]);	//Проверяет, является строка числом. Строка является числом, если содержит только цифры.
-int StringToInt(char szStr[]);
+bool isBinNumber(char szStr[]);
 bool isHexNumber(char szStr[]);	//Проверяет, является строка шестнадцатеричным числом. Строка является Hex-числом, если содержит только цифры и буквы ABCDEF либо abcdef.
-
+int Bin2Dec(char szStr[]);
+int Hex2Dec(char szStr[]);
 
 void main()
 {
@@ -36,15 +37,17 @@ void main()
 	cout << szStr << endl;
 	Capitalize(szStr);
 	cout << szStr << endl;
-#endif
 	Shrink(szStr);
 	cout << "Удалены лишние пробелы: " << szStr << endl;
 	cout << "Строка является палиндромом: " << isPalindrome(szStr) << endl;
 	RemoveSpaces(szStr);
 	cout << "Удалены все пробелы: " << szStr << endl;
 	cout << "Строка является числом: " << isNumber(szStr) << endl;
+#endif
 	cout << "Строка является Hex-числом: " << isHexNumber(szStr) << endl;
-	cout << StringToInt(szStr) << endl;
+	cout << "Строка является двоичным числом: " << isBinNumber(szStr) << endl;
+	cout << Bin2Dec(szStr) << endl;
+	cout << Hex2Dec(szStr) << endl;
 }
 
 void InputLine(char szStr[], const int n)
@@ -159,30 +162,74 @@ bool isNumber(char szStr[])
 	}
 }
 
-int StringToInt(char szStr[])
+bool isBinNumber(char szStr[])
 {
-	if (!isNumber(szStr))return 0;
-	int decimal = 0;
-	bool signed_number = false;
-	if (szStr[0] == '+' || szStr[0] == '-')signed_number = true;
-	for (int i = signed_number ? 1 : 0; szStr[i]; i++)
+	int n = StrLen(szStr);
+	char* buffer = new char[n + 1]{};
+	for (int i = 0; szStr[i]; i++)buffer[i] = szStr[i];
+	RemoveSpaces(buffer);
+	for (int i = 0; buffer[i]; i++)
 	{
-		decimal *= 10;
-		decimal += szStr[i] - 48;
+		if (buffer[i] != '0' && buffer[i] != '1')
+		{
+			delete[]buffer;
+			return false;
+		}
 	}
-	if (szStr[0] == '-')decimal = -decimal;
-	return decimal;
+	return true;
 }
-
-
-
-
 
 bool isHexNumber(char szStr[])
 {
 	for (int i = 0; i < szStr[i]; i++)
 	{
-		if (szStr[i] < '0' || szStr[i] > '9' && szStr[i] >= 'A' && szStr[i] <= 'F' || szStr[i] >= 'a' && szStr[i] <= 'f')return true;
-		else return false;
+		/*if (
+			!(szStr[i] >= '0' && szStr[i] <= '9') &&
+			!(szStr[i] >= 'A' && szStr[i] <= 'F') &&
+			!(szStr[i] >= 'a' && szStr[i] <= 'f')
+			)return false;*/
+		if (szStr[i] < '0' || (szStr[i] > '9' && szStr[i] < 'A') || (szStr[i] > 'F' && szStr[i] < 'a') || szStr[i] > 'f')return false;
 	}
+	return true;
+}
+
+int Bin2Dec(char szStr[])
+{
+	if (!isBinNumber(szStr))
+	{
+		cout << "Error: not binary" << endl;
+		return 0;
+	}
+	int capacity = StrLen(szStr);
+	int decimal = 0; //Десятичное число
+	int weight = 1; //Весовой коэффициент
+	for (int i = capacity - 1; i >= 0; i--)
+	{
+		if (szStr[i] == ' ')continue;
+		decimal += (szStr[i] - 48)*weight;
+		weight *= 2;
+	}
+	return decimal;
+}
+
+int Hex2Dec(char szStr[])
+{
+	if (!isHexNumber(szStr))
+	{
+		cout << "Error: not hexadecimal" << endl;
+		return 0;
+	}
+	int decimal = 0; //Десятичное число
+	int weight = 1; //Весовой коэффициент
+	for (int i = StrLen(szStr) - 1; i >= 0; i--)
+	{
+		if (szStr[i] == ' ')continue;
+		int digit;
+		if (szStr[i] >= 'a') digit = szStr[i] - 87;
+		else if (szStr[i] >= 'A') digit = szStr[i] - 55;
+		else digit = szStr[i] - 48;
+		decimal += digit*weight;
+		weight *= 16;
+	}
+	return decimal;
 }
