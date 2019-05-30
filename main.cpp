@@ -221,14 +221,17 @@ int Hex2Dec(char szStr[])
 	}
 	int decimal = 0; //Десятичное число
 	int weight = 1; //Весовой коэффициент
+	UpperCase(szStr);
 	for (int i = StrLen(szStr) - 1; i >= 0; i--)
 	{
 		if (szStr[i] == ' ')continue;
-		int digit;
+		/*int digit;
 		if (szStr[i] >= 'a') digit = szStr[i] - 87;
 		else if (szStr[i] >= 'A') digit = szStr[i] - 55;
 		else digit = szStr[i] - 48;
-		decimal += digit*weight;
+		decimal += digit*weight;*/
+		//decimal += (szStr[i] >= 'a' ? szStr[i] - 87 : szStr[i] >= 'A' ? szStr[i] - 55 : szStr[i] - 48)*weight;
+		decimal += (szStr[i] >= 'A' ? szStr[i] - 55 : szStr[i] - 48)*weight;
 		weight *= 16;
 	}
 	return decimal;
